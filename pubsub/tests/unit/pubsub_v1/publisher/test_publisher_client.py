@@ -62,6 +62,32 @@ def test_init_emulator(monkeypatch):
     channel = client.api.transport.publish._channel
     assert channel.target().decode("utf8") == "/foo/bar/"
 
+def test_message_ordering_enabled():
+    creds = mock.Mock(spec=credentials.Credentials)
+    client = publisher.Client(credentials=creds)
+    assert client._enable_message_ordering == False
+
+    client = publisher.Client(
+        publisher_options = types.PublisherOptions(
+            enable_message_ordering=True
+        ),
+        credentials=creds
+    )
+    assert client._enable_message_ordering == True
+
+def test_message_ordering_changes_retry_deadline():
+    creds = mock.Mock(spec=credentials.Credentials)
+
+    client = publisher.Client(credentials=creds)
+    assert client.api._method_configs["Publish"].retry._deadline == 600
+
+    client = publisher.Client(
+        publisher_options = types.PublisherOptions(
+            enable_message_ordering=True
+        ),
+        credentials=creds
+    )
+    assert client.api._method_configs["Publish"].retry._deadline == float("inf")
 
 def test_batch_create():
     creds = mock.Mock(spec=credentials.Credentials)
@@ -136,6 +162,25 @@ def test_publish_data_not_bytestring_error():
         client.publish(topic, u"This is a text string.")
     with pytest.raises(TypeError):
         client.publish(topic, 42)
+
+
+def test_publish_message_ordering_not_enabled_error():
+    creds = mock.Mock(spec=credentials.Credentials)
+    client = publisher.Client(credentials=creds)
+    topic = "topic/path"
+    with pytest.raises(ValueError):
+      client.publish(topic, b"bytestring body", ordering_key="ABC")
+
+def test_publish_empty_ordering_key_when_message_ordering_enabled():
+    creds = mock.Mock(spec=credentials.Credentials)
+    client = publisher.Client(
+        publisher_options = types.PublisherOptions(
+            enable_message_ordering=True
+        ),
+        credentials=creds
+    )
+    topic = "topic/path"
+    assert client.publish(topic, b"bytestring body", ordering_key="") is not None
 
 
 def test_publish_attrs_bytestring():

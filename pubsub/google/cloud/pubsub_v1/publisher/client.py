@@ -40,6 +40,15 @@ _BLACKLISTED_METHODS = (
 )
 
 
+def _set_nested_value(container, value, keys):
+    current = container
+    for key in keys[:-1]:
+        if current.get(key) is None:
+          current[key] = {}
+        current = current[key]
+    current[keys[-1]] = value
+    return container
+
 @_gapic.add_methods(publisher_client.PublisherClient, blacklist=_BLACKLISTED_METHODS)
 class Client(object):
     """A publisher client for Google Cloud Pub/Sub.
@@ -49,6 +58,8 @@ class Client(object):
     get sensible defaults.
 
     Args:
+        publisher_options (~google.cloud.pubsub_v1.types.PublisherOptions): The
+            options for the publisher client.
         batch_settings (~google.cloud.pubsub_v1.types.BatchSettings): The
             settings for batch publishing.
         kwargs (dict): Any additional arguments provided are sent as keyword
@@ -68,6 +79,11 @@ class Client(object):
         from google.cloud import pubsub_v1
 
         publisher_client = pubsub_v1.PublisherClient(
+            # Optional
+            publisher_options = pubsub_v1.types.PublisherOptions(
+                enable_message_ordering=False
+            ),
+
             # Optional
             batch_settings = pubsub_v1.types.BatchSettings(
                 max_bytes=1024,  # One kilobyte
@@ -96,7 +112,7 @@ class Client(object):
 
     _batch_class = thread.Batch
 
-    def __init__(self, batch_settings=(), **kwargs):
+    def __init__(self, publisher_options=(), batch_settings=(), **kwargs):
         # Sanity check: Is our goal to use the emulator?
         # If so, create a grpc insecure channel with the emulator host
         # as the target.
@@ -124,6 +140,16 @@ class Client(object):
             kwargs.pop("credentials", None)
             transport = publisher_grpc_transport.PublisherGrpcTransport(channel=channel)
             kwargs["transport"] = transport
+
+        # For a transient failure, retry publishing the message infinitely.
+        self.publisher_options = types.PublisherOptions(*publisher_options)
+        self._enable_message_ordering = self.publisher_options[0]
+        if self._enable_message_ordering:
+            client_config = _set_nested_value(
+                kwargs.pop("client_config", {}), float("inf"),
+                ["interfaces", "google.pubsub.v1.Publisher", "retry_params",
+                "messaging", "total_timeout_millis"])
+            kwargs["client_config"] = client_config
 
         # Add the metrics headers, and instantiate the underlying GAPIC
         # client.
@@ -204,7 +230,7 @@ class Client(object):
 
         return batch
 
-    def publish(self, topic, data, **attrs):
+    def publish(self, topic, data, ordering_key="", **attrs):
         """Publish a single message.
 
         .. note::
@@ -234,6 +260,11 @@ class Client(object):
             topic (str): The topic to publish messages to.
             data (bytes): A bytestring representing the message body. This
                 must be a bytestring.
+            ordering_key: A string that identifies related messages for which
+                publish order should be respected. Message ordering must be
+                enabled for this client to use this feature.
+                EXPERIMENTAL: This feature is currently available in a closed
+                alpha. Please contact the Cloud Pub/Sub team to use it.
             attrs (Mapping[str, str]): A dictionary of attributes to be
                 sent as metadata. (These may be text strings or byte strings.)
 
@@ -249,6 +280,13 @@ class Client(object):
             raise TypeError(
                 "Data being published to Pub/Sub must be sent " "as a bytestring."
             )
+
+        if (not self._enable_message_ordering and ordering_key != ""):
+            raise ValueError(
+                "Cannot publish a message with an ordering key when message "
+                "ordering is not enabled."
+            )
+
 
         # Coerce all attributes to text strings.
         for k, v in copy.copy(attrs).items():
