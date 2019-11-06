@@ -146,7 +146,7 @@ class Client(object):
         self._enable_message_ordering = self.publisher_options[0]
         if self._enable_message_ordering:
             client_config = _set_nested_value(
-                kwargs.pop("client_config", {}), float("inf"),
+                kwargs.pop("client_config", {}), 2**32,
                 ["interfaces", "google.pubsub.v1.Publisher", "retry_params",
                 "messaging", "total_timeout_millis"])
             kwargs["client_config"] = client_config
@@ -301,7 +301,8 @@ class Client(object):
             )
 
         # Create the Pub/Sub message object.
-        message = types.PubsubMessage(data=data, attributes=attrs)
+        message = types.PubsubMessage(data=data, attributes=attrs,
+                                      ordering_key=ordering_key)
 
         # Delegate the publishing to the batch.
         batch = self._batch(topic)

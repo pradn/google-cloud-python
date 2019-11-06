@@ -205,10 +205,12 @@ class Batch(base.Batch):
         start = time.time()
 
         try:
+            # Performs retries for errors defined in retry_codes.publish in the
+            # publisher_client_config.py file.
             response = self._client.api.publish(self._topic, self._messages)
         except google.api_core.exceptions.GoogleAPIError as exc:
-            # We failed to publish, set the exception on all futures and
-            # exit.
+            # We failed to publish, even after retries, so set the exception on
+            # all futures and exit.
             self._status = base.BatchStatus.ERROR
 
             for future in self._futures:

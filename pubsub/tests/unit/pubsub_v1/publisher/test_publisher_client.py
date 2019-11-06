@@ -87,7 +87,7 @@ def test_message_ordering_changes_retry_deadline():
         ),
         credentials=creds
     )
-    assert client.api._method_configs["Publish"].retry._deadline == float("inf")
+    assert client.api._method_configs["Publish"].retry._deadline == 2**32 / 1000
 
 def test_batch_create():
     creds = mock.Mock(spec=credentials.Credentials)
