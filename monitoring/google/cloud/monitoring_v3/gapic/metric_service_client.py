@@ -51,7 +51,7 @@ from google.protobuf import field_mask_pb2
 
 
 _GAPIC_LIBRARY_VERSION = pkg_resources.get_distribution(
-    "google-cloud-monitoring"
+    "google-cloud-monitoring",
 ).version
 
 
@@ -110,7 +110,7 @@ class MetricServiceClient(object):
     def project_path(cls, project):
         """Return a fully-qualified project string."""
         return google.api_core.path_template.expand(
-            "projects/{project}", project=project
+            "projects/{project}", project=project,
         )
 
     def __init__(
@@ -200,12 +200,12 @@ class MetricServiceClient(object):
                 self.transport = transport
         else:
             self.transport = metric_service_grpc_transport.MetricServiceGrpcTransport(
-                address=api_endpoint, channel=channel, credentials=credentials
+                address=api_endpoint, channel=channel, credentials=credentials,
             )
 
         if client_info is None:
             client_info = google.api_core.gapic_v1.client_info.ClientInfo(
-                gapic_version=_GAPIC_LIBRARY_VERSION
+                gapic_version=_GAPIC_LIBRARY_VERSION,
             )
         else:
             client_info.gapic_version = _GAPIC_LIBRARY_VERSION
@@ -216,7 +216,7 @@ class MetricServiceClient(object):
         # (Ordinarily, these are the defaults specified in the `*_config.py`
         # file next to this one.)
         self._method_configs = google.api_core.gapic_v1.config.parse_method_configs(
-            client_config["interfaces"][self._INTERFACE_NAME]
+            client_config["interfaces"][self._INTERFACE_NAME],
         )
 
         # Save a dictionary of cached API call functions.
@@ -236,8 +236,7 @@ class MetricServiceClient(object):
         metadata=None,
     ):
         """
-        Lists monitored resource descriptors that match a filter. This method does
-        not require a Stackdriver account.
+        Lists monitored resource descriptors that match a filter. This method does not require a Stackdriver account.
 
         Example:
             >>> from google.cloud import monitoring_v3
@@ -318,7 +317,7 @@ class MetricServiceClient(object):
             )
 
         request = metric_service_pb2.ListMonitoredResourceDescriptorsRequest(
-            name=name, filter=filter_, page_size=page_size
+            name=name, filter=filter_, page_size=page_size,
         )
         if metadata is None:
             metadata = []
@@ -356,8 +355,7 @@ class MetricServiceClient(object):
         metadata=None,
     ):
         """
-        Gets a single monitored resource descriptor. This method does not require a
-        Stackdriver account.
+        Gets a single monitored resource descriptor. This method does not require a Stackdriver account.
 
         Example:
             >>> from google.cloud import monitoring_v3
@@ -410,7 +408,7 @@ class MetricServiceClient(object):
                 client_info=self._client_info,
             )
 
-        request = metric_service_pb2.GetMonitoredResourceDescriptorRequest(name=name)
+        request = metric_service_pb2.GetMonitoredResourceDescriptorRequest(name=name,)
         if metadata is None:
             metadata = []
         metadata = list(metadata)
@@ -438,8 +436,7 @@ class MetricServiceClient(object):
         metadata=None,
     ):
         """
-        Lists metric descriptors that match a filter. This method does not require
-        a Stackdriver account.
+        Lists metric descriptors that match a filter. This method does not require a Stackdriver account.
 
         Example:
             >>> from google.cloud import monitoring_v3
@@ -517,7 +514,7 @@ class MetricServiceClient(object):
             )
 
         request = metric_service_pb2.ListMetricDescriptorsRequest(
-            name=name, filter=filter_, page_size=page_size
+            name=name, filter=filter_, page_size=page_size,
         )
         if metadata is None:
             metadata = []
@@ -555,8 +552,7 @@ class MetricServiceClient(object):
         metadata=None,
     ):
         """
-        Gets a single metric descriptor. This method does not require a Stackdriver
-        account.
+        Gets a single metric descriptor. This method does not require a Stackdriver account.
 
         Example:
             >>> from google.cloud import monitoring_v3
@@ -605,7 +601,7 @@ class MetricServiceClient(object):
                 client_info=self._client_info,
             )
 
-        request = metric_service_pb2.GetMetricDescriptorRequest(name=name)
+        request = metric_service_pb2.GetMetricDescriptorRequest(name=name,)
         if metadata is None:
             metadata = []
         metadata = list(metadata)
@@ -690,7 +686,7 @@ class MetricServiceClient(object):
             )
 
         request = metric_service_pb2.CreateMetricDescriptorRequest(
-            name=name, metric_descriptor=metric_descriptor
+            name=name, metric_descriptor=metric_descriptor,
         )
         if metadata is None:
             metadata = []
@@ -765,7 +761,7 @@ class MetricServiceClient(object):
                 client_info=self._client_info,
             )
 
-        request = metric_service_pb2.DeleteMetricDescriptorRequest(name=name)
+        request = metric_service_pb2.DeleteMetricDescriptorRequest(name=name,)
         if metadata is None:
             metadata = []
         metadata = list(metadata)
@@ -797,8 +793,7 @@ class MetricServiceClient(object):
         metadata=None,
     ):
         """
-        Lists time series that match a filter. This method does not require a
-        Stackdriver account.
+        Lists time series that match a filter. This method does not require a Stackdriver account.
 
         Example:
             >>> from google.cloud import monitoring_v3
@@ -843,7 +838,7 @@ class MetricServiceClient(object):
                 ::
 
                      metric.type = "compute.googleapis.com/instance/cpu/usage_time" AND
-                         metric.label.instance_name = "my-instance-name"
+                         metric.labels.instance_name = "my-instance-name"
             interval (Union[dict, ~google.cloud.monitoring_v3.types.TimeInterval]): The time interval for which results should be returned. Only time series
                 that contain data points in the specified interval are included
                 in the response.
@@ -851,14 +846,16 @@ class MetricServiceClient(object):
                 If a dict is provided, it must be of the same form as the protobuf
                 message :class:`~google.cloud.monitoring_v3.types.TimeInterval`
             view (~google.cloud.monitoring_v3.types.TimeSeriesView): Specifies which information is returned about the time series.
-            aggregation (Union[dict, ~google.cloud.monitoring_v3.types.Aggregation]): By default, the raw time series data is returned.
-                Use this field to combine multiple time series for different
-                views of the data.
+            aggregation (Union[dict, ~google.cloud.monitoring_v3.types.Aggregation]): Specifies the alignment of data points in individual time series as well
+                as how to combine the retrieved time series across specified labels.
+
+                By default (if no ``aggregation`` is explicitly specified), the raw time
+                series data is returned.
 
                 If a dict is provided, it must be of the same form as the protobuf
                 message :class:`~google.cloud.monitoring_v3.types.Aggregation`
             order_by (str): Unsupported: must be left blank. The points in each time series are
-                returned in reverse time order.
+                currently returned in reverse time order (most recent to oldest).
             page_size (int): The maximum number of resources contained in the
                 underlying API response. If page streaming is performed per-
                 resource, this parameter does not affect the return value. If page
@@ -972,6 +969,9 @@ class MetricServiceClient(object):
                 value must fully specify a unique time series by supplying all label
                 values for the metric and the monitored resource.
 
+                The maximum number of ``TimeSeries`` objects per ``Create`` request is
+                200.
+
                 If a dict is provided, it must be of the same form as the protobuf
                 message :class:`~google.cloud.monitoring_v3.types.TimeSeries`
             retry (Optional[google.api_core.retry.Retry]):  A retry object used
@@ -1005,7 +1005,7 @@ class MetricServiceClient(object):
             )
 
         request = metric_service_pb2.CreateTimeSeriesRequest(
-            name=name, time_series=time_series
+            name=name, time_series=time_series,
         )
         if metadata is None:
             metadata = []

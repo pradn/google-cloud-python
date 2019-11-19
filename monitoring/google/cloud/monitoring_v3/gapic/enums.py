@@ -19,6 +19,37 @@
 import enum
 
 
+class CalendarPeriod(enum.IntEnum):
+    """
+    A ``CalendarPeriod`` represents the abstract concept of a time period
+    that has a canonical start. Grammatically, "the start of the current
+    ``CalendarPeriod``." All calendar times begin at midnight UTC.
+
+    Attributes:
+      CALENDAR_PERIOD_UNSPECIFIED (int): Undefined period, raises an error.
+      DAY (int): A day.
+      WEEK (int): A week. Weeks begin on Monday, following `ISO
+      8601 <https://en.wikipedia.org/wiki/ISO_week_date>`__.
+      FORTNIGHT (int): A fortnight. The first calendar fortnight of the year begins at the
+      start of week 1 according to `ISO
+      8601 <https://en.wikipedia.org/wiki/ISO_week_date>`__.
+      MONTH (int): A month.
+      QUARTER (int): A quarter. Quarters start on dates 1-Jan, 1-Apr, 1-Jul, and 1-Oct of each
+      year.
+      HALF (int): A half-year. Half-years start on dates 1-Jan and 1-Jul.
+      YEAR (int): A year.
+    """
+
+    CALENDAR_PERIOD_UNSPECIFIED = 0
+    DAY = 1
+    WEEK = 2
+    FORTNIGHT = 3
+    MONTH = 4
+    QUARTER = 5
+    HALF = 6
+    YEAR = 7
+
+
 class ComparisonType(enum.IntEnum):
     """
     Specifies an ordering relationship on two arguments, here called left and
@@ -148,10 +179,10 @@ class ServiceTier(enum.IntEnum):
 
 class UptimeCheckRegion(enum.IntEnum):
     """
-    The regions from which an uptime check can be run.
+    The regions from which an Uptime check can be run.
 
     Attributes:
-      REGION_UNSPECIFIED (int): Default value if no region is specified. Will result in uptime checks
+      REGION_UNSPECIFIED (int): Default value if no region is specified. Will result in Uptime checks
       running from all regions.
       USA (int): Allows checks to run from locations within the United States of America.
       EUROPE (int): Allows checks to run from locations within the continent of Europe.
@@ -397,6 +428,31 @@ class AlertPolicy(object):
         AND_WITH_MATCHING_RESOURCE = 3
 
 
+class InternalChecker(object):
+    class State(enum.IntEnum):
+        """
+        Operational states for an internal checker.
+
+        Attributes:
+          UNSPECIFIED (int): An internal checker should never be in the unspecified state.
+          CREATING (int): The checker is being created, provisioned, and configured. A checker in
+          this state can be returned by ``ListInternalCheckers`` or
+          ``GetInternalChecker``, as well as by examining the `long running
+          Operation <https://cloud.google.com/apis/design/design_patterns#long_running_operations>`__
+          that created it.
+          RUNNING (int): The checker is running and available for use. A checker in this state
+          can be returned by ``ListInternalCheckers`` or ``GetInternalChecker`` as
+          well as by examining the `long running
+          Operation <https://cloud.google.com/apis/design/design_patterns#long_running_operations>`__
+          that created it. If a checker is being torn down, it is neither visible
+          nor usable, so there is no "deleting" or "down" state.
+        """
+
+        UNSPECIFIED = 0
+        CREATING = 1
+        RUNNING = 2
+
+
 class LabelDescriptor(object):
     class ValueType(enum.IntEnum):
         """
@@ -498,3 +554,59 @@ class NotificationChannel(object):
         VERIFICATION_STATUS_UNSPECIFIED = 0
         UNVERIFIED = 1
         VERIFIED = 2
+
+
+class ServiceLevelObjective(object):
+    class View(enum.IntEnum):
+        """
+        ``ServiceLevelObjective.View`` determines what form of
+        ``ServiceLevelObjective`` is returned from ``GetServiceLevelObjective``,
+        ``ListServiceLevelObjectives``, and
+        ``ListServiceLevelObjectiveVersions`` RPCs.
+
+        Attributes:
+          VIEW_UNSPECIFIED (int): Same as FULL.
+          FULL (int): Return the embedded ``ServiceLevelIndicator`` in the form in which it
+          was defined. If it was defined using a ``BasicSli``, return that
+          ``BasicSli``.
+          EXPLICIT (int): For ``ServiceLevelIndicator``\ s using ``BasicSli`` articulation,
+          instead return the ``ServiceLevelIndicator`` with its mode of
+          computation fully spelled out as a ``RequestBasedSli``. For
+          ``ServiceLevelIndicator``\ s using ``RequestBasedSli`` or
+          ``WindowsBasedSli``, return the ``ServiceLevelIndicator`` as it was
+          provided.
+        """
+
+        VIEW_UNSPECIFIED = 0
+        FULL = 2
+        EXPLICIT = 1
+
+
+class UptimeCheckConfig(object):
+    class ContentMatcher(object):
+        class ContentMatcherOption(enum.IntEnum):
+            """
+            Options to perform content matching.
+
+            Attributes:
+              CONTENT_MATCHER_OPTION_UNSPECIFIED (int): No content matcher type specified (maintained for backward
+              compatibility, but deprecated for future use). Treated as
+              ``CONTAINS_STRING``.
+              CONTAINS_STRING (int): Selects substring matching. The match succeeds if the output contains
+              the ``content`` string. This is the default value for checks without a
+              ``matcher`` option, or where the value of ``matcher`` is
+              ``CONTENT_MATCHER_OPTION_UNSPECIFIED``.
+              NOT_CONTAINS_STRING (int): Selects negation of substring matching. The match succeeds if the output
+              does *NOT* contain the ``content`` string.
+              MATCHES_REGEX (int): Selects regular-expression matching. The match succeeds of the output
+              matches the regular expression specified in the ``content`` string.
+              NOT_MATCHES_REGEX (int): Selects negation of regular-expression matching. The match succeeds if
+              the output does *NOT* match the regular expression specified in the
+              ``content`` string.
+            """
+
+            CONTENT_MATCHER_OPTION_UNSPECIFIED = 0
+            CONTAINS_STRING = 1
+            NOT_CONTAINS_STRING = 2
+            MATCHES_REGEX = 3
+            NOT_MATCHES_REGEX = 4

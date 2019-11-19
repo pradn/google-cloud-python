@@ -51,6 +51,9 @@ from google.cloud.monitoring_v3.proto import metric_service_pb2_grpc
 from google.cloud.monitoring_v3.proto import notification_pb2
 from google.cloud.monitoring_v3.proto import notification_service_pb2
 from google.cloud.monitoring_v3.proto import notification_service_pb2_grpc
+from google.cloud.monitoring_v3.proto import service_pb2
+from google.cloud.monitoring_v3.proto import service_service_pb2
+from google.cloud.monitoring_v3.proto import service_service_pb2_grpc
 from google.cloud.monitoring_v3.proto import uptime_pb2
 from google.cloud.monitoring_v3.proto import uptime_service_pb2
 from google.cloud.monitoring_v3.proto import uptime_service_pb2_grpc
@@ -60,15 +63,15 @@ from google.protobuf import timestamp_pb2
 
 
 _GAPIC_LIBRARY_VERSION = pkg_resources.get_distribution(
-    "google-cloud-monitoring"
+    "google-cloud-monitoring",
 ).version
 
 
 class UptimeCheckServiceClient(object):
     """
     The UptimeCheckService API is used to manage (list, create, delete,
-    edit) uptime check configurations in the Stackdriver Monitoring product.
-    An uptime check is a piece of configuration that determines which
+    edit) Uptime check configurations in the Stackdriver Monitoring product.
+    An Uptime check is a piece of configuration that determines which
     resources and services to monitor for availability. These configurations
     can also be configured interactively by navigating to the [Cloud
     Console] (http://console.cloud.google.com), selecting the appropriate
@@ -107,7 +110,7 @@ class UptimeCheckServiceClient(object):
     def project_path(cls, project):
         """Return a fully-qualified project string."""
         return google.api_core.path_template.expand(
-            "projects/{project}", project=project
+            "projects/{project}", project=project,
         )
 
     @classmethod
@@ -206,12 +209,12 @@ class UptimeCheckServiceClient(object):
                 self.transport = transport
         else:
             self.transport = uptime_check_service_grpc_transport.UptimeCheckServiceGrpcTransport(
-                address=api_endpoint, channel=channel, credentials=credentials
+                address=api_endpoint, channel=channel, credentials=credentials,
             )
 
         if client_info is None:
             client_info = google.api_core.gapic_v1.client_info.ClientInfo(
-                gapic_version=_GAPIC_LIBRARY_VERSION
+                gapic_version=_GAPIC_LIBRARY_VERSION,
             )
         else:
             client_info.gapic_version = _GAPIC_LIBRARY_VERSION
@@ -222,7 +225,7 @@ class UptimeCheckServiceClient(object):
         # (Ordinarily, these are the defaults specified in the `*_config.py`
         # file next to this one.)
         self._method_configs = google.api_core.gapic_v1.config.parse_method_configs(
-            client_config["interfaces"][self._INTERFACE_NAME]
+            client_config["interfaces"][self._INTERFACE_NAME],
         )
 
         # Save a dictionary of cached API call functions.
@@ -241,8 +244,8 @@ class UptimeCheckServiceClient(object):
         metadata=None,
     ):
         """
-        Lists the existing valid uptime check configurations for the project,
-        leaving out any invalid configurations.
+        Lists the existing valid Uptime check configurations for the project
+        (leaving out any invalid configurations).
 
         Example:
             >>> from google.cloud import monitoring_v3
@@ -266,7 +269,7 @@ class UptimeCheckServiceClient(object):
             ...         pass
 
         Args:
-            parent (str): The project whose uptime check configurations are listed. The format is
+            parent (str): The project whose Uptime check configurations are listed. The format is
                 ``projects/[PROJECT_ID]``.
             page_size (int): The maximum number of resources contained in the
                 underlying API response. If page streaming is performed per-
@@ -310,7 +313,7 @@ class UptimeCheckServiceClient(object):
             )
 
         request = uptime_service_pb2.ListUptimeCheckConfigsRequest(
-            parent=parent, page_size=page_size
+            parent=parent, page_size=page_size,
         )
         if metadata is None:
             metadata = []
@@ -348,7 +351,7 @@ class UptimeCheckServiceClient(object):
         metadata=None,
     ):
         """
-        Gets a single uptime check configuration.
+        Gets a single Uptime check configuration.
 
         Example:
             >>> from google.cloud import monitoring_v3
@@ -360,7 +363,7 @@ class UptimeCheckServiceClient(object):
             >>> response = client.get_uptime_check_config(name)
 
         Args:
-            name (str): The uptime check configuration to retrieve. The format is
+            name (str): The Uptime check configuration to retrieve. The format is
                 ``projects/[PROJECT_ID]/uptimeCheckConfigs/[UPTIME_CHECK_ID]``.
             retry (Optional[google.api_core.retry.Retry]):  A retry object used
                 to retry requests. If ``None`` is specified, requests will
@@ -395,7 +398,7 @@ class UptimeCheckServiceClient(object):
                 client_info=self._client_info,
             )
 
-        request = uptime_service_pb2.GetUptimeCheckConfigRequest(name=name)
+        request = uptime_service_pb2.GetUptimeCheckConfigRequest(name=name,)
         if metadata is None:
             metadata = []
         metadata = list(metadata)
@@ -422,7 +425,7 @@ class UptimeCheckServiceClient(object):
         metadata=None,
     ):
         """
-        Creates a new uptime check configuration.
+        Creates a new Uptime check configuration.
 
         Example:
             >>> from google.cloud import monitoring_v3
@@ -437,9 +440,9 @@ class UptimeCheckServiceClient(object):
             >>> response = client.create_uptime_check_config(parent, uptime_check_config)
 
         Args:
-            parent (str): The project in which to create the uptime check. The format is
+            parent (str): The project in which to create the Uptime check. The format is
                 ``projects/[PROJECT_ID]``.
-            uptime_check_config (Union[dict, ~google.cloud.monitoring_v3.types.UptimeCheckConfig]): The new uptime check configuration.
+            uptime_check_config (Union[dict, ~google.cloud.monitoring_v3.types.UptimeCheckConfig]): The new Uptime check configuration.
 
                 If a dict is provided, it must be of the same form as the protobuf
                 message :class:`~google.cloud.monitoring_v3.types.UptimeCheckConfig`
@@ -477,7 +480,7 @@ class UptimeCheckServiceClient(object):
             )
 
         request = uptime_service_pb2.CreateUptimeCheckConfigRequest(
-            parent=parent, uptime_check_config=uptime_check_config
+            parent=parent, uptime_check_config=uptime_check_config,
         )
         if metadata is None:
             metadata = []
@@ -505,10 +508,10 @@ class UptimeCheckServiceClient(object):
         metadata=None,
     ):
         """
-        Updates an uptime check configuration. You can either replace the entire
+        Updates an Uptime check configuration. You can either replace the entire
         configuration with a new one or replace only certain fields in the
         current configuration by specifying the fields to be updated via
-        ``"updateMask"``. Returns the updated configuration.
+        ``updateMask``. Returns the updated configuration.
 
         Example:
             >>> from google.cloud import monitoring_v3
@@ -521,12 +524,12 @@ class UptimeCheckServiceClient(object):
             >>> response = client.update_uptime_check_config(uptime_check_config)
 
         Args:
-            uptime_check_config (Union[dict, ~google.cloud.monitoring_v3.types.UptimeCheckConfig]): Required. If an ``"updateMask"`` has been specified, this field gives
-                the values for the set of fields mentioned in the ``"updateMask"``. If
-                an ``"updateMask"`` has not been given, this uptime check configuration
+            uptime_check_config (Union[dict, ~google.cloud.monitoring_v3.types.UptimeCheckConfig]): Required. If an ``updateMask`` has been specified, this field gives the
+                values for the set of fields mentioned in the ``updateMask``. If an
+                ``updateMask`` has not been given, this Uptime check configuration
                 replaces the current configuration. If a field is mentioned in
-                ``"updateMask"`` but the corresonding field is omitted in this partial
-                uptime check configuration, it has the effect of deleting/clearing the
+                ``updateMask`` but the corresonding field is omitted in this partial
+                Uptime check configuration, it has the effect of deleting/clearing the
                 field from the configuration on the server.
 
                 The following fields can be updated: ``display_name``, ``http_check``,
@@ -535,7 +538,7 @@ class UptimeCheckServiceClient(object):
 
                 If a dict is provided, it must be of the same form as the protobuf
                 message :class:`~google.cloud.monitoring_v3.types.UptimeCheckConfig`
-            update_mask (Union[dict, ~google.cloud.monitoring_v3.types.FieldMask]): Optional. If present, only the listed fields in the current uptime check
+            update_mask (Union[dict, ~google.cloud.monitoring_v3.types.FieldMask]): Optional. If present, only the listed fields in the current Uptime check
                 configuration are updated with values from the new configuration. If this
                 field is empty, then the current configuration is completely replaced with
                 the new configuration.
@@ -576,7 +579,7 @@ class UptimeCheckServiceClient(object):
             )
 
         request = uptime_service_pb2.UpdateUptimeCheckConfigRequest(
-            uptime_check_config=uptime_check_config, update_mask=update_mask
+            uptime_check_config=uptime_check_config, update_mask=update_mask,
         )
         if metadata is None:
             metadata = []
@@ -603,8 +606,8 @@ class UptimeCheckServiceClient(object):
         metadata=None,
     ):
         """
-        Deletes an uptime check configuration. Note that this method will fail
-        if the uptime check configuration is referenced by an alert policy or
+        Deletes an Uptime check configuration. Note that this method will fail
+        if the Uptime check configuration is referenced by an alert policy or
         other dependent configs that would be rendered invalid by the deletion.
 
         Example:
@@ -617,7 +620,7 @@ class UptimeCheckServiceClient(object):
             >>> client.delete_uptime_check_config(name)
 
         Args:
-            name (str): The uptime check configuration to delete. The format is
+            name (str): The Uptime check configuration to delete. The format is
                 ``projects/[PROJECT_ID]/uptimeCheckConfigs/[UPTIME_CHECK_ID]``.
             retry (Optional[google.api_core.retry.Retry]):  A retry object used
                 to retry requests. If ``None`` is specified, requests will
@@ -649,7 +652,7 @@ class UptimeCheckServiceClient(object):
                 client_info=self._client_info,
             )
 
-        request = uptime_service_pb2.DeleteUptimeCheckConfigRequest(name=name)
+        request = uptime_service_pb2.DeleteUptimeCheckConfigRequest(name=name,)
         if metadata is None:
             metadata = []
         metadata = list(metadata)
@@ -675,7 +678,7 @@ class UptimeCheckServiceClient(object):
         metadata=None,
     ):
         """
-        Returns the list of IPs that checkers run from
+        Returns the list of IP addresses that checkers run from
 
         Example:
             >>> from google.cloud import monitoring_v3
@@ -738,7 +741,7 @@ class UptimeCheckServiceClient(object):
                 client_info=self._client_info,
             )
 
-        request = uptime_service_pb2.ListUptimeCheckIpsRequest(page_size=page_size)
+        request = uptime_service_pb2.ListUptimeCheckIpsRequest(page_size=page_size,)
         iterator = google.api_core.page_iterator.GRPCIterator(
             client=None,
             method=functools.partial(

@@ -187,7 +187,7 @@ class Client(ClientWithProject):
 
         self._connection = Connection(self, **kw_args)
         self._location = location
-        self._default_query_job_config = default_query_job_config
+        self._default_query_job_config = copy.deepcopy(default_query_job_config)
 
     @property
     def location(self):
@@ -1381,6 +1381,7 @@ class Client(ClientWithProject):
         destination = _table_arg_to_table_ref(destination, default_project=self.project)
 
         if job_config:
+            job_config = copy.deepcopy(job_config)
             _verify_job_config_type(job_config, google.cloud.bigquery.job.LoadJobConfig)
 
         load_job = job.LoadJob(job_ref, source_uris, destination, self, job_config)
@@ -1465,6 +1466,7 @@ class Client(ClientWithProject):
         destination = _table_arg_to_table_ref(destination, default_project=self.project)
         job_ref = job._JobReference(job_id, project=project, location=location)
         if job_config:
+            job_config = copy.deepcopy(job_config)
             _verify_job_config_type(job_config, google.cloud.bigquery.job.LoadJobConfig)
         load_job = job.LoadJob(job_ref, None, destination, self, job_config)
         job_resource = load_job.to_api_repr()
@@ -1969,6 +1971,8 @@ class Client(ClientWithProject):
 
         if job_config:
             _verify_job_config_type(job_config, google.cloud.bigquery.job.CopyJobConfig)
+            job_config = copy.deepcopy(job_config)
+
         copy_job = job.CopyJob(
             job_ref, sources, destination, client=self, job_config=job_config
         )
@@ -2049,6 +2053,8 @@ class Client(ClientWithProject):
             _verify_job_config_type(
                 job_config, google.cloud.bigquery.job.ExtractJobConfig
             )
+            job_config = copy.deepcopy(job_config)
+
         extract_job = job.ExtractJob(
             job_ref, source, destination_uris, client=self, job_config=job_config
         )
@@ -2112,6 +2118,8 @@ class Client(ClientWithProject):
         if location is None:
             location = self.location
 
+        job_config = copy.deepcopy(job_config)
+
         if self._default_query_job_config:
             if job_config:
                 _verify_job_config_type(
@@ -2129,7 +2137,7 @@ class Client(ClientWithProject):
                     self._default_query_job_config,
                     google.cloud.bigquery.job.QueryJobConfig,
                 )
-                job_config = self._default_query_job_config
+                job_config = copy.deepcopy(self._default_query_job_config)
 
         job_ref = job._JobReference(job_id, project=project, location=location)
         query_job = job.QueryJob(job_ref, query, client=self, job_config=job_config)
@@ -2264,29 +2272,32 @@ class Client(ClientWithProject):
             table (Union[ \
                 google.cloud.bigquery.table.Table \
                 google.cloud.bigquery.table.TableReference, \
-                str, \
+                str \
             ]):
                 The destination table for the row data, or a reference to it.
             json_rows (Sequence[Dict]):
                 Row data to be inserted. Keys must match the table schema fields
                 and values must be JSON-compatible representations.
-            row_ids (Sequence[str]):
-                (Optional) Unique ids, one per row being inserted. If omitted,
-                unique IDs are created.
-            skip_invalid_rows (bool):
-                (Optional) Insert all valid rows of a request, even if invalid
-                rows exist. The default value is False, which causes the entire
-                request to fail if any invalid rows exist.
-            ignore_unknown_values (bool):
-                (Optional) Accept rows that contain values that do not match the
-                schema. The unknown values are ignored. Default is False, which
+            row_ids (Optional[Sequence[Optional[str]]]):
+                Unique IDs, one per row being inserted. An ID can also be
+                ``None``, indicating that an explicit insert ID should **not**
+                be used for that row. If the argument is omitted altogether,
+                unique IDs are created automatically.
+            skip_invalid_rows (Optional[bool]):
+                Insert all valid rows of a request, even if invalid rows exist.
+                The default value is ``False``, which causes the entire request
+                to fail if any invalid rows exist.
+            ignore_unknown_values (Optional[bool]):
+                Accept rows that contain values that do not match the schema.
+                The unknown values are ignored. Default is ``False``, which
                 treats unknown values as errors.
-            template_suffix (str):
-                (Optional) treat ``name`` as a template table and provide a suffix.
-                BigQuery will create the table ``<name> + <template_suffix>`` based
-                on the schema of the template table. See
+            template_suffix (Optional[str]):
+                Treat ``name`` as a template table and provide a suffix.
+                BigQuery will create the table ``<name> + <template_suffix>``
+                based on the schema of the template table. See
                 https://cloud.google.com/bigquery/streaming-data-into-bigquery#template-tables
-            retry (google.api_core.retry.Retry): (Optional) How to retry the RPC.
+            retry (Optional[google.api_core.retry.Retry]):
+                How to retry the RPC.
 
         Returns:
             Sequence[Mappings]:

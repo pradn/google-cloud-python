@@ -68,8 +68,7 @@ class BigtableColumn(object):
         """str: The encoding of the values when the type is not `STRING`
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.%28key%29.bigtableOptions.columnFamilies.columns.encoding
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.columns.encoding
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumn.FIELDS.encoding
         """
         return self._properties.get("encoding")
 
@@ -83,8 +82,7 @@ class BigtableColumn(object):
         field identifier
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.%28key%29.bigtableOptions.columnFamilies.columns.fieldName
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.columns.fieldName
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumn.FIELDS.field_name
         """
         return self._properties.get("fieldName")
 
@@ -98,8 +96,7 @@ class BigtableColumn(object):
         column are exposed.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.%28key%29.bigtableOptions.columnFamilies.columns.onlyReadLatest
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.columns.onlyReadLatest
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumn.FIELDS.only_read_latest
         """
         return self._properties.get("onlyReadLatest")
 
@@ -115,8 +112,7 @@ class BigtableColumn(object):
         will handle base64 encoding for you.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.%28key%29.bigtableOptions.columnFamilies.columns.qualifierEncoded
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.columns.qualifierEncoded
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumn.FIELDS.qualifier_encoded
         """
         prop = self._properties.get("qualifierEncoded")
         if prop is None:
@@ -132,8 +128,7 @@ class BigtableColumn(object):
         """str: A valid UTF-8 string qualifier
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.%28key%29.bigtableOptions.columnFamilies.columns.qualifierEncoded
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.columns.qualifierEncoded
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumn.FIELDS.qualifier_string
         """
         return self._properties.get("qualifierString")
 
@@ -146,8 +141,7 @@ class BigtableColumn(object):
         """str: The type to convert the value in cells of this column.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.%28key%29.bigtableOptions.columnFamilies.columns.type
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.columns.type
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumn.FIELDS.type
         """
         return self._properties.get("type")
 
@@ -194,8 +188,7 @@ class BigtableColumnFamily(object):
         """str: The encoding of the values when the type is not `STRING`
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).bigtableOptions.columnFamilies.encoding
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.encoding
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumnFamily.FIELDS.encoding
         """
         return self._properties.get("encoding")
 
@@ -208,8 +201,7 @@ class BigtableColumnFamily(object):
         """str: Identifier of the column family.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).bigtableOptions.columnFamilies.familyId
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.familyId
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumnFamily.FIELDS.family_id
         """
         return self._properties.get("familyId")
 
@@ -223,8 +215,7 @@ class BigtableColumnFamily(object):
         for all columns in this column family.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).bigtableOptions.columnFamilies.onlyReadLatest
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.onlyReadLatest
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumnFamily.FIELDS.only_read_latest
         """
         return self._properties.get("onlyReadLatest")
 
@@ -237,8 +228,7 @@ class BigtableColumnFamily(object):
         """str: The type to convert the value in cells of this column family.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).bigtableOptions.columnFamilies.type
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.type
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumnFamily.FIELDS.type
         """
         return self._properties.get("type")
 
@@ -252,8 +242,7 @@ class BigtableColumnFamily(object):
         that should be exposed as individual fields.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).bigtableOptions.columnFamilies.columns
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies.columns
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableColumnFamily.FIELDS.columns
         """
         prop = self._properties.get("columns", [])
         return [BigtableColumn.from_api_repr(col) for col in prop]
@@ -307,8 +296,7 @@ class BigtableOptions(object):
         :attr:`column_families` list. Defaults to :data:`False`.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).bigtableOptions.ignoreUnspecifiedColumnFamilies
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.ignoreUnspecifiedColumnFamilies
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableOptions.FIELDS.ignore_unspecified_column_families
         """
         return self._properties.get("ignoreUnspecifiedColumnFamilies")
 
@@ -322,8 +310,7 @@ class BigtableOptions(object):
         converted to string. Defaults to :data:`False`.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).bigtableOptions.readRowkeyAsString
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.readRowkeyAsString
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableOptions.FIELDS.read_rowkey_as_string
         """
         return self._properties.get("readRowkeyAsString")
 
@@ -337,8 +324,7 @@ class BigtableOptions(object):
         column families to expose in the table schema along with their types.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).bigtableOptions.columnFamilies
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.bigtableOptions.columnFamilies
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#BigtableOptions.FIELDS.column_families
         """
         prop = self._properties.get("columnFamilies", [])
         return [BigtableColumnFamily.from_api_repr(cf) for cf in prop]
@@ -390,8 +376,7 @@ class CSVOptions(object):
         null values. Defaults to :data:`False`.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).csvOptions.allowJaggedRows
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.csvOptions.allowJaggedRows
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#CsvOptions.FIELDS.allow_jagged_rows
         """
         return self._properties.get("allowJaggedRows")
 
@@ -405,8 +390,7 @@ class CSVOptions(object):
         characters in a CSV file are allowed. Defaults to :data:`False`.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).csvOptions.allowQuotedNewlines
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.csvOptions.allowQuotedNewlines
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#CsvOptions.FIELDS.allow_quoted_newlines
         """
         return self._properties.get("allowQuotedNewlines")
 
@@ -419,8 +403,7 @@ class CSVOptions(object):
         """str: The character encoding of the data.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).csvOptions.encoding
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.csvOptions.encoding
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#CsvOptions.FIELDS.encoding
         """
         return self._properties.get("encoding")
 
@@ -433,8 +416,7 @@ class CSVOptions(object):
         """str: The separator for fields in a CSV file. Defaults to comma (',').
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).csvOptions.fieldDelimiter
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.csvOptions.fieldDelimiter
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#CsvOptions.FIELDS.field_delimiter
         """
         return self._properties.get("fieldDelimiter")
 
@@ -447,8 +429,7 @@ class CSVOptions(object):
         """str: The value that is used to quote data sections in a CSV file.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).csvOptions.quote
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.csvOptions.quote
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#CsvOptions.FIELDS.quote
         """
         return self._properties.get("quote")
 
@@ -461,8 +442,7 @@ class CSVOptions(object):
         """int: The number of rows at the top of a CSV file.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).csvOptions.skipLeadingRows
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.csvOptions.skipLeadingRows
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#CsvOptions.FIELDS.skip_leading_rows
         """
         return _int_or_none(self._properties.get("skipLeadingRows"))
 
@@ -512,8 +492,7 @@ class GoogleSheetsOptions(object):
         skip when reading the data.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).googleSheetsOptions.skipLeadingRows
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.googleSheetsOptions.skipLeadingRows
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#GoogleSheetsOptions.FIELDS.skip_leading_rows
         """
         return _int_or_none(self._properties.get("skipLeadingRows"))
 
@@ -526,7 +505,7 @@ class GoogleSheetsOptions(object):
         """str: The range of a sheet that BigQuery will query from.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#GoogleSheetsOptions
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#GoogleSheetsOptions.FIELDS.range
         """
         return _str_or_none(self._properties.get("range"))
 
@@ -564,6 +543,76 @@ class GoogleSheetsOptions(object):
 _OPTION_CLASSES = (BigtableOptions, CSVOptions, GoogleSheetsOptions)
 
 
+class HivePartitioningOptions(object):
+    """[Beta] Options that configure hive partitioning.
+
+    .. note::
+        **Experimental**. This feature is experimental and might change or
+        have limited support.
+
+    See
+    https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#HivePartitioningOptions
+    """
+
+    def __init__(self):
+        self._properties = {}
+
+    @property
+    def mode(self):
+        """Optional[str]: When set, what mode of hive partitioning to use when reading data.
+
+        Two modes are supported: "AUTO" and "STRINGS".
+
+        See
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#HivePartitioningOptions.FIELDS.mode
+        """
+        return self._properties.get("mode")
+
+    @mode.setter
+    def mode(self, value):
+        self._properties["mode"] = value
+
+    @property
+    def source_uri_prefix(self):
+        """Optional[str]: When hive partition detection is requested, a common prefix for
+        all source URIs is required.
+
+        See
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#HivePartitioningOptions.FIELDS.source_uri_prefix
+        """
+        return self._properties.get("sourceUriPrefix")
+
+    @source_uri_prefix.setter
+    def source_uri_prefix(self, value):
+        self._properties["sourceUriPrefix"] = value
+
+    def to_api_repr(self):
+        """Build an API representation of this object.
+
+        Returns:
+            Dict[str, Any]: A dictionary in the format used by the BigQuery API.
+        """
+        return copy.deepcopy(self._properties)
+
+    @classmethod
+    def from_api_repr(cls, resource):
+        """Factory: construct a :class:`~.external_config.HivePartitioningOptions`
+        instance given its API representation.
+
+        Args:
+            resource (Dict[str, Any]):
+                Definition of a :class:`~.external_config.HivePartitioningOptions`
+                instance in the same representation as is returned from the
+                API.
+
+        Returns:
+            HivePartitioningOptions: Configuration parsed from ``resource``.
+        """
+        config = cls()
+        config._properties = copy.deepcopy(resource)
+        return config
+
+
 class ExternalConfig(object):
     """Description of an external data source.
 
@@ -586,13 +635,13 @@ class ExternalConfig(object):
         Format of external source.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.sourceFormat
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#ExternalDataConfiguration.FIELDS.source_format
         """
         return self._properties["sourceFormat"]
 
     @property
     def options(self):
-        """Dict[str, Any]: Source-specific options."""
+        """Optional[Dict[str, Any]]: Source-specific options."""
         return self._options
 
     @property
@@ -601,8 +650,7 @@ class ExternalConfig(object):
         automatically.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).autodetect
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.autodetect
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#ExternalDataConfiguration.FIELDS.autodetect
         """
         return self._properties.get("autodetect")
 
@@ -615,8 +663,7 @@ class ExternalConfig(object):
         """str: The compression type of the data source.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).compression
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.compression
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#ExternalDataConfiguration.FIELDS.compression
         """
         return self._properties.get("compression")
 
@@ -625,13 +672,34 @@ class ExternalConfig(object):
         self._properties["compression"] = value
 
     @property
+    def hive_partitioning(self):
+        """Optional[:class:`~.external_config.HivePartitioningOptions`]: [Beta] When set, \
+        it configures hive partitioning support.
+
+        .. note::
+            **Experimental**. This feature is experimental and might change or
+            have limited support.
+
+        See
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#ExternalDataConfiguration.FIELDS.hive_partitioning_options
+        """
+        prop = self._properties.get("hivePartitioningOptions")
+        if prop is None:
+            return None
+        return HivePartitioningOptions.from_api_repr(prop)
+
+    @hive_partitioning.setter
+    def hive_partitioning(self, value):
+        prop = value.to_api_repr() if value is not None else None
+        self._properties["hivePartitioningOptions"] = prop
+
+    @property
     def ignore_unknown_values(self):
         """bool: If :data:`True`, extra values that are not represented in the
         table schema are ignored. Defaults to :data:`False`.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).ignoreUnknownValues
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.ignoreUnknownValues
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#ExternalDataConfiguration.FIELDS.ignore_unknown_values
         """
         return self._properties.get("ignoreUnknownValues")
 
@@ -645,8 +713,7 @@ class ExternalConfig(object):
         reading data.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).maxBadRecords
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.maxBadRecords
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#ExternalDataConfiguration.FIELDS.max_bad_records
         """
         return self._properties.get("maxBadRecords")
 
@@ -659,8 +726,7 @@ class ExternalConfig(object):
         """List[str]: URIs that point to your data in Google Cloud.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).sourceUris
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.sourceUris
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#ExternalDataConfiguration.FIELDS.source_uris
         """
         return self._properties.get("sourceUris", [])
 
@@ -674,8 +740,7 @@ class ExternalConfig(object):
         for the data.
 
         See
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs#configuration.query.tableDefinitions.(key).schema
-        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#externalDataConfiguration.schema
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#ExternalDataConfiguration.FIELDS.schema
         """
         prop = self._properties.get("schema", {})
         return [SchemaField.from_api_repr(field) for field in prop.get("fields", [])]

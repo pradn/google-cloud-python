@@ -156,7 +156,7 @@ class FixedSizePool(AbstractSessionPool):
         super(FixedSizePool, self).__init__(labels=labels)
         self.size = size
         self.default_timeout = default_timeout
-        self._sessions = queue.Queue(size)
+        self._sessions = queue.LifoQueue(size)
 
     def bind(self, database):
         """Associate the pool with a database.
@@ -251,7 +251,7 @@ class BurstyPool(AbstractSessionPool):
         super(BurstyPool, self).__init__(labels=labels)
         self.target_size = target_size
         self._database = None
-        self._sessions = queue.Queue(target_size)
+        self._sessions = queue.LifoQueue(target_size)
 
     def bind(self, database):
         """Associate the pool with a database.
@@ -503,7 +503,7 @@ class TransactionPingingPool(PingingPool):
             raise queue.Full
 
         txn = session._transaction
-        if txn is None or txn.committed() or txn._rolled_back:
+        if txn is None or txn.committed or txn._rolled_back:
             session.transaction()
             self._pending_sessions.put(session)
         else:

@@ -264,7 +264,7 @@ latex_documents = [
         u"google-cloud-monitoring Documentation",
         author,
         "manual",
-    )
+    ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -320,7 +320,7 @@ texinfo_documents = [
         "google-cloud-monitoring",
         "GAPIC library for the {metadata.shortName} v3 service",
         "APIs",
-    )
+    ),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -344,7 +344,7 @@ intersphinx_mapping = {
     "google-gax": ("https://gax-python.readthedocs.io/en/latest/", None),
     "google.api_core": ("https://googleapis.dev/python/google-api-core/latest", None),
     "grpc": ("https://grpc.io/grpc/python/", None),
-    "requests": ("https://requests.kennethreitz.org/en/stable/", None),
+    "requests": ("https://requests.kennethreitz.org/en/master/", None),
     "fastavro": ("https://fastavro.readthedocs.io/en/stable/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
 }

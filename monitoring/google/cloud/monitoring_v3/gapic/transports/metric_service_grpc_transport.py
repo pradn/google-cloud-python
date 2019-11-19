@@ -58,7 +58,7 @@ class MetricServiceGrpcTransport(object):
         # exception (channels come with credentials baked in already).
         if channel is not None and credentials is not None:
             raise ValueError(
-                "The `channel` and `credentials` arguments are mutually " "exclusive."
+                "The `channel` and `credentials` arguments are mutually " "exclusive.",
             )
 
         # Create the channel.
@@ -77,7 +77,7 @@ class MetricServiceGrpcTransport(object):
         # gRPC uses objects called "stubs" that are bound to the
         # channel and provide a basic method for each RPC.
         self._stubs = {
-            "metric_service_stub": metric_service_pb2_grpc.MetricServiceStub(channel)
+            "metric_service_stub": metric_service_pb2_grpc.MetricServiceStub(channel),
         }
 
     @classmethod
@@ -116,8 +116,7 @@ class MetricServiceGrpcTransport(object):
     def list_monitored_resource_descriptors(self):
         """Return the gRPC stub for :meth:`MetricServiceClient.list_monitored_resource_descriptors`.
 
-        Lists monitored resource descriptors that match a filter. This method does
-        not require a Stackdriver account.
+        Lists monitored resource descriptors that match a filter. This method does not require a Stackdriver account.
 
         Returns:
             Callable: A callable which accepts the appropriate
@@ -130,8 +129,7 @@ class MetricServiceGrpcTransport(object):
     def get_monitored_resource_descriptor(self):
         """Return the gRPC stub for :meth:`MetricServiceClient.get_monitored_resource_descriptor`.
 
-        Gets a single monitored resource descriptor. This method does not require a
-        Stackdriver account.
+        Gets a single monitored resource descriptor. This method does not require a Stackdriver account.
 
         Returns:
             Callable: A callable which accepts the appropriate
@@ -144,8 +142,7 @@ class MetricServiceGrpcTransport(object):
     def list_metric_descriptors(self):
         """Return the gRPC stub for :meth:`MetricServiceClient.list_metric_descriptors`.
 
-        Lists metric descriptors that match a filter. This method does not require
-        a Stackdriver account.
+        Lists metric descriptors that match a filter. This method does not require a Stackdriver account.
 
         Returns:
             Callable: A callable which accepts the appropriate
@@ -158,8 +155,7 @@ class MetricServiceGrpcTransport(object):
     def get_metric_descriptor(self):
         """Return the gRPC stub for :meth:`MetricServiceClient.get_metric_descriptor`.
 
-        Gets a single metric descriptor. This method does not require a Stackdriver
-        account.
+        Gets a single metric descriptor. This method does not require a Stackdriver account.
 
         Returns:
             Callable: A callable which accepts the appropriate
@@ -201,8 +197,7 @@ class MetricServiceGrpcTransport(object):
     def list_time_series(self):
         """Return the gRPC stub for :meth:`MetricServiceClient.list_time_series`.
 
-        Lists time series that match a filter. This method does not require a
-        Stackdriver account.
+        Lists time series that match a filter. This method does not require a Stackdriver account.
 
         Returns:
             Callable: A callable which accepts the appropriate

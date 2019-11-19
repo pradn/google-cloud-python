@@ -1448,6 +1448,46 @@ class TestLoadJobConfig(unittest.TestCase, _Base):
         config.field_delimiter = field_delimiter
         self.assertEqual(config._properties["load"]["fieldDelimiter"], field_delimiter)
 
+    def test_hive_partitioning_missing(self):
+        config = self._get_target_class()()
+        self.assertIsNone(config.hive_partitioning)
+
+    def test_hive_partitioning_hit(self):
+        from google.cloud.bigquery.external_config import HivePartitioningOptions
+
+        config = self._get_target_class()()
+        config._properties["load"]["hivePartitioningOptions"] = {
+            "sourceUriPrefix": "http://foo/bar",
+            "mode": "STRINGS",
+        }
+        result = config.hive_partitioning
+        self.assertIsInstance(result, HivePartitioningOptions)
+        self.assertEqual(result.source_uri_prefix, "http://foo/bar")
+        self.assertEqual(result.mode, "STRINGS")
+
+    def test_hive_partitioning_setter(self):
+        from google.cloud.bigquery.external_config import HivePartitioningOptions
+
+        hive_partitioning = HivePartitioningOptions()
+        hive_partitioning.source_uri_prefix = "http://foo/bar"
+        hive_partitioning.mode = "AUTO"
+
+        config = self._get_target_class()()
+        config.hive_partitioning = hive_partitioning
+        self.assertEqual(
+            config._properties["load"]["hivePartitioningOptions"],
+            {"sourceUriPrefix": "http://foo/bar", "mode": "AUTO"},
+        )
+
+        config.hive_partitioning = None
+        self.assertIsNone(config._properties["load"]["hivePartitioningOptions"])
+
+    def test_hive_partitioning_invalid_type(self):
+        config = self._get_target_class()()
+
+        with self.assertRaises(TypeError):
+            config.hive_partitioning = {"mode": "AUTO"}
+
     def test_ignore_unknown_values_missing(self):
         config = self._get_target_class()()
         self.assertIsNone(config.ignore_unknown_values)
@@ -1532,7 +1572,7 @@ class TestLoadJobConfig(unittest.TestCase, _Base):
         self.assertEqual(all_props, SchemaField.from_api_repr(all_props_repr))
         self.assertEqual(minimal, SchemaField.from_api_repr(minimal_repr))
 
-    def test_schema_setter(self):
+    def test_schema_setter_fields(self):
         from google.cloud.bigquery.schema import SchemaField
 
         config = self._get_target_class()()
@@ -1554,6 +1594,42 @@ class TestLoadJobConfig(unittest.TestCase, _Base):
         self.assertEqual(
             config._properties["load"]["schema"], {"fields": [full_name_repr, age_repr]}
         )
+
+    def test_schema_setter_valid_mappings_list(self):
+        config = self._get_target_class()()
+
+        schema = [
+            {"name": "full_name", "type": "STRING", "mode": "REQUIRED"},
+            {"name": "age", "type": "INTEGER", "mode": "REQUIRED"},
+        ]
+        config.schema = schema
+
+        full_name_repr = {
+            "name": "full_name",
+            "type": "STRING",
+            "mode": "REQUIRED",
+            "description": None,
+        }
+        age_repr = {
+            "name": "age",
+            "type": "INTEGER",
+            "mode": "REQUIRED",
+            "description": None,
+        }
+        self.assertEqual(
+            config._properties["load"]["schema"], {"fields": [full_name_repr, age_repr]}
+        )
+
+    def test_schema_setter_invalid_mappings_list(self):
+        config = self._get_target_class()()
+
+        schema = [
+            {"name": "full_name", "type": "STRING", "mode": "REQUIRED"},
+            {"name": "age", "typeoo": "INTEGER", "mode": "REQUIRED"},
+        ]
+
+        with self.assertRaises(Exception):
+            config.schema = schema
 
     def test_schema_setter_unsetting_schema(self):
         from google.cloud.bigquery.schema import SchemaField

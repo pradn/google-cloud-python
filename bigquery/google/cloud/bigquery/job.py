@@ -29,6 +29,7 @@ from google.cloud.bigquery.dataset import DatasetListItem
 from google.cloud.bigquery.dataset import DatasetReference
 from google.cloud.bigquery.encryption_configuration import EncryptionConfiguration
 from google.cloud.bigquery.external_config import ExternalConfig
+from google.cloud.bigquery.external_config import HivePartitioningOptions
 from google.cloud.bigquery import _helpers
 from google.cloud.bigquery.query import _query_param_from_api_repr
 from google.cloud.bigquery.query import ArrayQueryParameter
@@ -38,6 +39,7 @@ from google.cloud.bigquery.query import UDFResource
 from google.cloud.bigquery.retry import DEFAULT_RETRY
 from google.cloud.bigquery.routine import RoutineReference
 from google.cloud.bigquery.schema import SchemaField
+from google.cloud.bigquery.schema import _to_schema_fields
 from google.cloud.bigquery.table import _EmptyRowIterator
 from google.cloud.bigquery.table import RangePartitioning
 from google.cloud.bigquery.table import _table_arg_to_table_ref
@@ -1138,6 +1140,33 @@ class LoadJobConfig(_JobConfig):
         self._set_sub_prop("fieldDelimiter", value)
 
     @property
+    def hive_partitioning(self):
+        """Optional[:class:`~.external_config.HivePartitioningOptions`]: [Beta] When set, \
+        it configures hive partitioning support.
+
+        .. note::
+            **Experimental**. This feature is experimental and might change or
+            have limited support.
+
+        See
+        https://cloud.google.com/bigquery/docs/reference/rest/v2/Job#JobConfigurationLoad.FIELDS.hive_partitioning_options
+        """
+        prop = self._get_sub_prop("hivePartitioningOptions")
+        if prop is None:
+            return None
+        return HivePartitioningOptions.from_api_repr(prop)
+
+    @hive_partitioning.setter
+    def hive_partitioning(self, value):
+        if value is not None:
+            if isinstance(value, HivePartitioningOptions):
+                value = value.to_api_repr()
+            else:
+                raise TypeError("Expected a HivePartitioningOptions instance or None.")
+
+        self._set_sub_prop("hivePartitioningOptions", value)
+
+    @property
     def ignore_unknown_values(self):
         """bool: Ignore extra values not represented in the table schema.
 
@@ -1225,8 +1254,10 @@ class LoadJobConfig(_JobConfig):
 
     @property
     def schema(self):
-        """List[google.cloud.bigquery.schema.SchemaField]: Schema of the
-        destination table.
+        """Sequence[Union[ \
+            :class:`~google.cloud.bigquery.schema.SchemaField`, \
+            Mapping[str, Any] \
+        ]]: Schema of the destination table.
 
         See
         https://cloud.google.com/bigquery/docs/reference/rest/v2/Job#JobConfigurationLoad.FIELDS.schema
@@ -1242,8 +1273,8 @@ class LoadJobConfig(_JobConfig):
             self._del_sub_prop("schema")
             return
 
-        if not all(hasattr(field, "to_api_repr") for field in value):
-            raise ValueError("Schema items must be fields")
+        value = _to_schema_fields(value)
+
         _helpers._set_sub_prop(
             self._properties,
             ["load", "schema", "fields"],

@@ -14,7 +14,9 @@
 
 import base64
 import datetime
+import gzip
 import hashlib
+import io
 import os
 import re
 import tempfile
@@ -34,10 +36,10 @@ import google.oauth2
 
 from test_utils.retry import RetryErrors
 from test_utils.system import unique_resource_id
+from test_utils.vpcsc_config import vpcsc_config
 
 
 USER_PROJECT = os.environ.get("GOOGLE_CLOUD_TESTS_USER_PROJECT")
-RUNNING_IN_VPCSC = os.getenv("GOOGLE_CLOUD_TESTS_IN_VPCSC", "").lower() == "true"
 
 
 def _bad_copy(bad_request):
@@ -620,9 +622,26 @@ class TestStorageWriteFiles(TestStorageFiles):
 
         self.assertEqual(file_contents, stored_contents)
 
+    def test_upload_gzip_encoded_download_raw(self):
+        payload = b"DEADBEEF" * 1000
+        raw_stream = io.BytesIO()
+        with gzip.GzipFile(fileobj=raw_stream, mode="wb") as gzip_stream:
+            gzip_stream.write(payload)
+        zipped = raw_stream.getvalue()
+
+        blob = self.bucket.blob("test_gzipped.gz")
+        blob.content_encoding = "gzip"
+        blob.upload_from_file(raw_stream, rewind=True)
+
+        expanded = blob.download_as_string()
+        self.assertEqual(expanded, payload)
+
+        raw = blob.download_as_string(raw_download=True)
+        self.assertEqual(raw, zipped)
+
 
 class TestUnicode(unittest.TestCase):
-    @unittest.skipIf(RUNNING_IN_VPCSC, "Test is not VPCSC compatible.")
+    @vpcsc_config.skip_if_inside_vpcsc
     def test_fetch_object_and_check_content(self):
         client = storage.Client()
         bucket = client.bucket("storage-library-test-bucket")
@@ -1361,7 +1380,7 @@ class TestAnonymousClient(unittest.TestCase):
 
     PUBLIC_BUCKET = "gcp-public-data-landsat"
 
-    @unittest.skipIf(RUNNING_IN_VPCSC, "Test is not VPCSC compatible.")
+    @vpcsc_config.skip_if_inside_vpcsc
     def test_access_to_public_bucket(self):
         anonymous = storage.Client.create_anonymous_client()
         bucket = anonymous.bucket(self.PUBLIC_BUCKET)
