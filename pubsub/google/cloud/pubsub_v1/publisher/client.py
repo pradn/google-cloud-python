@@ -90,9 +90,11 @@ class _PeriodicCommitter(object):
 
 """
 TODO pradn
-1. periodic commit
-2. state transitions simplify
-3. tests
+* periodic commit
+* track all batches unordered
+* tests
+
+* [done]state transitions simplify
 """
 
 class _OrderedSequencerStatus(object):
