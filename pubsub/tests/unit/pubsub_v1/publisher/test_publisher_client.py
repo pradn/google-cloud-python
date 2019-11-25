@@ -62,6 +62,7 @@ def test_init_emulator(monkeypatch):
     channel = client.api.transport.publish._channel
     assert channel.target().decode("utf8") == "/foo/bar/"
 
+
 def test_message_ordering_enabled():
     creds = mock.Mock(spec=credentials.Credentials)
     client = publisher.Client(credentials=creds)
@@ -75,11 +76,12 @@ def test_message_ordering_enabled():
     )
     assert client._enable_message_ordering == True
 
+
 def test_message_ordering_changes_retry_deadline():
     creds = mock.Mock(spec=credentials.Credentials)
 
     client = publisher.Client(credentials=creds)
-    assert client.api._method_configs["Publish"].retry._deadline == 600
+    assert client.api._method_configs["Publish"].retry._deadline == 60
 
     client = publisher.Client(
         publisher_options = types.PublisherOptions(
@@ -88,41 +90,6 @@ def test_message_ordering_changes_retry_deadline():
         credentials=creds
     )
     assert client.api._method_configs["Publish"].retry._deadline == 2**32 / 1000
-
-def test_batch_create():
-    creds = mock.Mock(spec=credentials.Credentials)
-    client = publisher.Client(credentials=creds)
-
-    assert len(client._batches) == 0
-    topic = "topic/path"
-    batch = client._batch(topic, autocommit=False)
-    assert client._batches == {topic: batch}
-
-
-def test_batch_exists():
-    creds = mock.Mock(spec=credentials.Credentials)
-    client = publisher.Client(credentials=creds)
-
-    topic = "topic/path"
-    client._batches[topic] = mock.sentinel.batch
-
-    # A subsequent request should return the same batch.
-    batch = client._batch(topic, autocommit=False)
-    assert batch is mock.sentinel.batch
-    assert client._batches == {topic: batch}
-
-
-def test_batch_create_and_exists():
-    creds = mock.Mock(spec=credentials.Credentials)
-    client = publisher.Client(credentials=creds)
-
-    topic = "topic/path"
-    client._batches[topic] = mock.sentinel.batch
-
-    # A subsequent request should return the same batch.
-    batch = client._batch(topic, create=True, autocommit=False)
-    assert batch is not mock.sentinel.batch
-    assert client._batches == {topic: batch}
 
 
 def test_publish():
@@ -136,7 +103,7 @@ def test_publish():
     batch.publish.side_effect = (mock.sentinel.future1, mock.sentinel.future2)
 
     topic = "topic/path"
-    client._batches[topic] = batch
+    client._set_batch(topic, batch)
 
     # Begin publishing.
     future1 = client.publish(topic, b"spam")
@@ -171,6 +138,7 @@ def test_publish_message_ordering_not_enabled_error():
     with pytest.raises(ValueError):
       client.publish(topic, b"bytestring body", ordering_key="ABC")
 
+
 def test_publish_empty_ordering_key_when_message_ordering_enabled():
     creds = mock.Mock(spec=credentials.Credentials)
     client = publisher.Client(
@@ -193,7 +161,7 @@ def test_publish_attrs_bytestring():
     batch.will_accept.return_value = True
 
     topic = "topic/path"
-    client._batches[topic] = batch
+    client._set_batch(topic, batch)
 
     # Begin publishing.
     future = client.publish(topic, b"foo", bar=b"baz")
@@ -219,11 +187,11 @@ def test_publish_new_batch_needed():
     batch2.publish.return_value = mock.sentinel.future
 
     topic = "topic/path"
-    client._batches[topic] = batch1
+    client._set_batch(topic, batch1)
 
     # Actually mock the batch class now.
     batch_class = mock.Mock(spec=(), return_value=batch2)
-    client._batch_class = batch_class
+    client._set_batch_class(batch_class)
 
     # Publish a message.
     future = client.publish(topic, b"foo", bar=b"baz")
@@ -231,7 +199,8 @@ def test_publish_new_batch_needed():
 
     # Check the mocks.
     batch_class.assert_called_once_with(
-        autocommit=True, client=client, settings=client.batch_settings, topic=topic
+        client=mock.ANY, topic=topic, settings=client.batch_settings,
+        batch_done_callback=None, autocommit=True, commit_when_full=True
     )
     message_pb = types.PubsubMessage(data=b"foo", attributes={"bar": u"baz"})
     batch1.publish.assert_called_once_with(message_pb)
@@ -250,23 +219,13 @@ def test_stop():
     creds = mock.Mock(spec=credentials.Credentials)
     client = publisher.Client(credentials=creds)
 
-    batch = client._batch("topic1", autocommit=False)
-    batch2 = client._batch("topic2", autocommit=False)
+    batch1 = mock.Mock(spec=client._batch_class)
+    topic = "topic/path"
+    client._set_batch(topic, batch1)
 
-    pubsub_msg = types.PubsubMessage(data=b"msg")
+    client.stop()
 
-    patch = mock.patch.object(batch, "commit")
-    patch2 = mock.patch.object(batch2, "commit")
-
-    with patch as commit_mock, patch2 as commit_mock2:
-        batch.publish(pubsub_msg)
-        batch2.publish(pubsub_msg)
-
-        client.stop()
-
-        # check if commit() called
-        commit_mock.assert_called()
-        commit_mock2.assert_called()
+    assert batch1.commit.call_count == 1
 
     # check that closed publisher doesn't accept new messages
     with pytest.raises(RuntimeError):
@@ -310,3 +269,21 @@ def test_gapic_class_method_on_instance():
     client = publisher.Client(credentials=creds)
     answer = client.topic_path("foo", "bar")
     assert answer == "projects/foo/topics/bar"
+
+
+"""
+def test_unordered_sequencer_create_new():
+    creds = mock.Mock(spec=credentials.Credentials)
+    client = publisher.Client(credentials=creds)
+
+    batch = mock.Mock(spec=client._batch_class)
+    batch.publish.return_value = mock.sentinel.future
+    batch_class = mock.Mock(spec=(), return_value=batch)
+
+    sequencer = _UnorderedSequencer(client, batch_class, client._batch_settings,
+
+    # Use a mock in lieu of the actual batch class.
+    batch = mock.Mock(spec=client._batch_class)
+    answer = client.topic_path("foo", "bar")
+    assert answer == "projects/foo/topics/bar"
+"""

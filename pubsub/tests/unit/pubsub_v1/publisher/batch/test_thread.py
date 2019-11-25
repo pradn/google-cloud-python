@@ -39,8 +39,8 @@ def create_batch(autocommit=False, **batch_settings):
 
     Args:
         autocommit (bool): Whether the batch should commit after
-            ``max_latency`` seconds. By default, this is ``False``
-            for unit testing.
+            ``max_latency`` seconds or after batch gets full. By default,
+            this is ``False`` for unit testing.
         batch_settings (dict): Arguments passed on to the
             :class:``~.pubsub_v1.types.BatchSettings`` constructor.
 
@@ -200,7 +200,7 @@ def test_blocking__commit_already_started(_LOGGER):
     assert batch._status == BatchStatus.IN_PROGRESS
 
     _LOGGER.debug.assert_called_once_with(
-        "Batch is already in progress, exiting commit"
+        "Batch is already in progress or has been cancelled, exiting commit"
     )
 
 
