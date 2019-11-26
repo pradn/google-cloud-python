@@ -16,6 +16,7 @@ from __future__ import absolute_import
 
 import concurrent.futures as futures
 import copy
+import logging
 import os
 import pkg_resources
 import threading
@@ -35,6 +36,8 @@ from google.cloud.pubsub_v1.publisher._batch import thread
 
 
 __version__ = pkg_resources.get_distribution("google-cloud-pubsub").version
+
+_LOGGER = logging.getLogger(__name__)
 
 _BLACKLISTED_METHODS = (
     "publish",
@@ -61,40 +64,14 @@ class PublishToPausedOrderingKeyException(Exception):
       self.ordering_key = ordering_key
       super(PublishToPausedOrderingKeyException, self).__init__()
 
-# TODO: use edge-triggering
-class _PeriodicCommitter(object):
-    def __init__(self, commit_period):
-        self._lock = threading.Lock()
-        self._sequencers = []
-        self._commit_period = commit_period
-
-        self._thread = threading.Thread(
-              name="Thread-PubSubPublisherPeriodicCommitter",
-              target=self._commit
-          )
-        self._thread.start()
-
-    def add_sequencer(sequencer):
-        with self._lock:
-            self._sequencers.append(sequencer)
-
-    def _commit(self):
-        # todo figure out how to stop
-        #while True:
-        for i in range(0, 10):
-            time.sleep(self._commit_period)
-
-            for sequencer in self._sequencers:
-                with self._lock:
-                    sequencer.commit()
-
 """
 TODO pradn
-* periodic commit
-* track all batches unordered
+* remove autocommit
 * tests
 
 * [done]state transitions simplify
+* [done]periodic commit
+* [not doing]track all batches unordered
 """
 
 class _OrderedSequencerStatus(object):
@@ -332,7 +309,7 @@ class _UnorderedSequencer(object):
             topic=self._topic,
             settings=self._client.batch_settings,
             batch_done_callback=None,
-            autocommit=True,
+            autocommit=False,
             commit_when_full=True
         )
 
@@ -493,6 +470,21 @@ class Client(object):
         self._sequencers = {}
         #self._periodic_committer = _PeriodicCommitter(self.batch_settings.max_latency)
         self._is_stopped = False
+        # Thread created to commit all sequencers after a timeout.
+        self._commit_thread = None
+
+    def _wait_and_commit_sequencers(self):
+        """ Waits up to the batching timeout, and commits all sequencers.
+        """
+        # Sleep for however long we should be waiting.
+        time.sleep(self.batch_settings.max_latency)
+
+        with self._batch_lock:
+            if self._is_stopped:
+                return
+            for sequencer in self._sequencers.values():
+                sequencer.commit()
+            self._commit_thread = None
 
     @classmethod
     def from_service_account_file(cls, filename, batch_settings=(), **kwargs):
@@ -662,7 +654,16 @@ class Client(object):
             sequencer = self._get_or_create_sequencer(topic, ordering_key)
 
             # Delegate the publishing to the sequencer.
-            return sequencer.publish(message)
+            future = sequencer.publish(message)
+
+            if not self._commit_thread and \
+               self.batch_settings.max_latency < float("inf"):
+                self._commit_thread  = threading.Thread(
+                    name="PubSubBatchCommitter",
+                    target=self._wait_and_commit_sequencers
+                )
+                self._commit_thread.start()
+            return future
 
     # Used only for testing.
     def _set_batch(self, topic, batch, ordering_key=""):
