@@ -471,20 +471,6 @@ class Client(object):
         # Thread created to commit all sequencers after a timeout.
         self._commit_thread = None
 
-    def _wait_and_commit_sequencers(self):
-        """ Waits up to the batching timeout, and commits all sequencers.
-        """
-        # Sleep for however long we should be waiting.
-        time.sleep(self.batch_settings.max_latency)
-        _LOGGER.debug("Commit thread is waking up")
-
-        with self._batch_lock:
-            if self._is_stopped:
-                return
-            for sequencer in self._sequencers.values():
-                sequencer.commit()
-            self._commit_thread = None
-
     @classmethod
     def from_service_account_file(cls, filename, batch_settings=(), **kwargs):
         """Creates an instance of this client using the provided credentials
@@ -663,6 +649,20 @@ class Client(object):
                 )
                 self._commit_thread.start()
             return future
+
+    def _wait_and_commit_sequencers(self):
+        """ Waits up to the batching timeout, and commits all sequencers.
+        """
+        # Sleep for however long we should be waiting.
+        time.sleep(self.batch_settings.max_latency)
+        _LOGGER.debug("Commit thread is waking up")
+
+        with self._batch_lock:
+            if self._is_stopped:
+                return
+            for sequencer in self._sequencers.values():
+                sequencer.commit()
+            self._commit_thread = None
 
     # Used only for testing.
     def _set_batch(self, topic, batch, ordering_key=""):
