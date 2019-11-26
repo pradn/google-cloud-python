@@ -323,35 +323,18 @@ class _UnorderedSequencer(object):
         if self._current_batch:
             self._current_batch.commit()
 
-    def _get_or_create_batch(self, create=False):
-        """ This will create a new batch if ``create=True`` or if no batch
-        currently exists.
-
-        Args:
-            create (bool): Whether to create a new batch. Defaults to
-                :data:`False`. If :data:`True`, this will create a new batch
-                even if one already exists.
-
-        Returns:
-            ~.pubsub_v1._batch.Batch: The batch object.
+    def _create_batch(self):
+        """ Creates a new batch using the client's batch class and other stored
+            settings.
         """
-        if not create:
-            batch = self._current_batch
-            if batch is None:
-                create = True
-
-        if create:
-            batch = self._client._batch_class(
-                client=self._client,
-                topic=self._topic,
-                settings=self._client.batch_settings,
-                batch_done_callback=None,
-                autocommit=True,
-                commit_when_full=True
-            )
-            self._current_batch = batch
-
-        return batch
+        return self._client._batch_class(
+            client=self._client,
+            topic=self._topic,
+            settings=self._client.batch_settings,
+            batch_done_callback=None,
+            autocommit=True,
+            commit_when_full=True
+        )
 
     def publish(self, message):
         """ Batch message into existing or new batch.
@@ -370,13 +353,23 @@ class _UnorderedSequencer(object):
         """
         if self._stopped:
             raise RuntimeError("Ordered sequencer already stopped.")
-        batch = self._get_or_create_batch()
+
+        if not self._current_batch:
+          newbatch = self._create_batch()
+          self._current_batch = newbatch
+
+        batch = self._current_batch
         future = None
         while future is None:
           future = batch.publish(message)
+          # batch is full, triggering commit_when_full
           if future is None:
-              batch = self._get_or_create_batch(create=True)
+              batch = self._create_batch()
+              # At this point, we lose track of the old batch, but we don't 
+              # care since it's already committed (because it was full.)
+              self._current_batch = batch
         return future
+
 
     # Used only for testing.
     def _set_batch(self, batch):
