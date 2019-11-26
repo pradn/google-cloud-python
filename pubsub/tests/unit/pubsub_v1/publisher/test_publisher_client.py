@@ -200,7 +200,7 @@ def test_publish_new_batch_needed():
     # Check the mocks.
     batch_class.assert_called_once_with(
         client=mock.ANY, topic=topic, settings=client.batch_settings,
-        batch_done_callback=None, autocommit=False, commit_when_full=True
+        batch_done_callback=None, commit_when_full=True
     )
     message_pb = types.PubsubMessage(data=b"foo", attributes={"bar": u"baz"})
     batch1.publish.assert_called_once_with(message_pb)

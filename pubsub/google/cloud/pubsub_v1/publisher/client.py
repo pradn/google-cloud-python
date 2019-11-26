@@ -216,7 +216,6 @@ class _OrderedSequencer(object):
             topic=self._topic,
             settings=self._client.batch_settings,
             batch_done_callback=_batch_done_callback,
-            autocommit=False,
             commit_when_full=False
         )
 
@@ -309,7 +308,6 @@ class _UnorderedSequencer(object):
             topic=self._topic,
             settings=self._client.batch_settings,
             batch_done_callback=None,
-            autocommit=False,
             commit_when_full=True
         )
 
@@ -478,6 +476,7 @@ class Client(object):
         """
         # Sleep for however long we should be waiting.
         time.sleep(self.batch_settings.max_latency)
+        _LOGGER.debug("Commit thread is waking up")
 
         with self._batch_lock:
             if self._is_stopped:

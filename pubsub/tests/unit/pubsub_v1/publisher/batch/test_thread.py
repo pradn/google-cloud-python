@@ -34,13 +34,10 @@ def create_client():
     return publisher.Client(credentials=creds)
 
 
-def create_batch(autocommit=False, **batch_settings):
+def create_batch(**batch_settings):
     """Return a batch object suitable for testing.
 
     Args:
-        autocommit (bool): Whether the batch should commit after
-            ``max_latency`` seconds or after batch gets full. By default,
-            this is ``False`` for unit testing.
         batch_settings (dict): Arguments passed on to the
             :class:``~.pubsub_v1.types.BatchSettings`` constructor.
 
@@ -49,7 +46,7 @@ def create_batch(autocommit=False, **batch_settings):
     """
     client = create_client()
     settings = types.BatchSettings(**batch_settings)
-    return Batch(client, "topic_name", settings, autocommit=autocommit)
+    return Batch(client, "topic_name", settings)
 
 
 def test_init():
@@ -69,9 +66,9 @@ def test_init():
     assert batch.status == BatchStatus.ACCEPTING_MESSAGES
 
 
-def test_init_infinite_latency():
-    batch = create_batch(max_latency=float("inf"))
-    assert batch._thread is None
+# def test_init_infinite_latency():
+#    batch = create_batch(max_latency=float("inf"))
+#    assert batch._thread is None
 
 
 @mock.patch.object(threading, "Lock")
@@ -84,7 +81,7 @@ def test_make_lock(Lock):
 def test_client():
     client = create_client()
     settings = types.BatchSettings()
-    batch = Batch(client, "topic_name", settings, autocommit=False)
+    batch = Batch(client, "topic_name", settings)
     assert batch.client is client
 
 

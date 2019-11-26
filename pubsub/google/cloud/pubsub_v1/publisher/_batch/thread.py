@@ -66,15 +66,12 @@ class Batch(base.Batch):
             argument: successfully published or a permanent error occurred.
             Temporary errors are not surfaced because they are retried at a
             lower level.
-        autocommit (bool): Whether to autocommit the batch when the time
-            has elapsed. Defaults to True unless ``settings.max_latency`` is
-            inf.
         commit_when_full (bool): Whether to commit the batch when the batch
             is full.
     """
 
     def __init__(self, client, topic, settings, batch_done_callback=None,
-                 autocommit=True, commit_when_full=True):
+                 commit_when_full=True):
         self._client = client
         self._topic = topic
         self._settings = settings
@@ -91,15 +88,6 @@ class Batch(base.Batch):
         self._status = base.BatchStatus.ACCEPTING_MESSAGES
         self._batch_done_callback = batch_done_callback
         self._commit_when_full = commit_when_full
-
-        # If max latency is specified, start a thread to monitor the batch and
-        # commit when the max latency is reached.
-        self._thread = None
-        if autocommit and self._settings.max_latency < float("inf"):
-            self._thread = threading.Thread(
-                name="Thread-MonitorBatchPublisher", target=self.monitor
-            )
-            self._thread.start()
 
     @staticmethod
     def make_lock():
@@ -286,21 +274,6 @@ class Batch(base.Batch):
 
         if self._batch_done_callback is not None:
             self._batch_done_callback(batch_transport_succeeded)
-
-    def monitor(self):
-        """Commit this batch after sufficient time has elapsed.
-
-        This simply sleeps for ``self._settings.max_latency`` seconds,
-        and then calls commit unless the batch has already been committed.
-        """
-        # NOTE: This blocks; it is up to the calling code to call it
-        #       in a separate thread.
-
-        # Sleep for however long we should be waiting.
-        time.sleep(self._settings.max_latency)
-
-        _LOGGER.debug("Monitor is waking up")
-        return self._commit()
 
     def publish(self, message):
         """Publish a single message.
