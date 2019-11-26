@@ -327,7 +327,7 @@ class _UnorderedSequencer(object):
                 If called after stop() has already been called.
         """
         if self._stopped:
-            raise RuntimeError("Ordered sequencer already stopped.")
+            raise RuntimeError("Unordered sequencer already stopped.")
 
         if not self._current_batch:
           newbatch = self._create_batch()
