@@ -12,27 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-
-import concurrent.futures as futures
-import copy
-import logging
-import os
-import pkg_resources
-import threading
-import time
-
-import grpc
-import six
-
-from google.api_core import grpc_helpers
-from google.oauth2 import service_account
-
-from google.cloud.pubsub_v1 import _gapic
-from google.cloud.pubsub_v1 import types
-from google.cloud.pubsub_v1.gapic import publisher_client
-from google.cloud.pubsub_v1.gapic.transports import publisher_grpc_transport
-from google.cloud.pubsub_v1.publisher._batch import thread
 
 # Not thread-safe.
 class UnorderedSequencer(object):
