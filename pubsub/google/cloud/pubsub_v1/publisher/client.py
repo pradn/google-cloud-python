@@ -46,7 +46,6 @@ _BLACKLISTED_METHODS = (
     "from_service_account_json",
 )
 
-
 def _set_nested_value(container, value, keys):
     current = container
     for key in keys[:-1]:
